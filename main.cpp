@@ -49,9 +49,10 @@ enum states {
 };
 
 vector <Transaction> allTransactions;
+int count_different_than_27 = 0;
 
 void parseReport(string &line, enum states &current_state, enum states &previous_state, Transaction &new_transaction){
-    string data = "", file_id = "", ARN="", date="", intern_line="", key;
+    string data = "", file_id = "", ARN="", date="", intern_line="", key="", ddays="";
     int i_date = 0;
     stringstream ss(line);
     ss >> key; ss >> key;
@@ -151,6 +152,12 @@ void parseReport(string &line, enum states &current_state, enum states &previous
             previous_state = get_date_state;
             break;
         }
+
+        ddays = line.substr(36+key.size(),2);
+        if(ddays != "27"){
+            count_different_than_27++;
+            cout << "Warning dday different than 27" << endl;
+        }
         date = line.substr(48+key.size(),4);
         i_date = stoi(date);
         new_transaction.jdate = i_date;
@@ -245,6 +252,10 @@ void outputSolutions(vector<Transaction> transactions, string outputFile){
     if(transactions.empty()){
         myfile << "There is no solution." << endl;
         return ;
+    }
+    if(count_different_than_27){
+        cout << "Warning" << endl;
+        cout << count_different_than_27 << " different than BR 27." <<endl;
     }
     myfile << "\"FILE_ID\", \"ARN\", \"Julian Date Time\"" << endl;
 

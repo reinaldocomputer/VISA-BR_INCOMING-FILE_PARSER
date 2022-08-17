@@ -12,24 +12,25 @@ using namespace std;
 
 class Transaction {
     public:
-    string file_id;
-    string ARN;
+    string file_id, ARN, SettlementType;
     int jdate; // data juliana
 
     void print(ostream &cout) const{
         cout << "\"" << this->file_id << "\",";
         cout << "\"" << this->ARN << "\",";
-        cout << "\"2" << this->jdate << "\""; //Adding year digit
+        cout << "\"2" << this->jdate << "\","; //Adding year digit
+        cout << "\"" << this->SettlementType << "\"";
         cout << endl;
     }
     Transaction(){
         file_id = "";
         ARN = "";
         jdate = 0;
+        SettlementType = "";
     }
 
     void clean(){
-        ARN = "";
+        ARN = SettlementType = "";
         jdate = 0;
     }
 };
@@ -154,6 +155,7 @@ void parseReport(string &line, enum states &current_state, enum states &previous
         }
 
         ddays = line.substr(36+key.size(),2);
+        new_transaction.SettlementType = ddays;
         if(ddays != "27"){
             count_different_than_27++;
             cout << "Warning dday different than 27" << endl;
@@ -257,7 +259,7 @@ void outputSolutions(vector<Transaction> transactions, string outputFile){
         cout << "Warning" << endl;
         cout << count_different_than_27 << " different than BR 27." <<endl;
     }
-    myfile << "\"FILE_ID\", \"ARN\", \"Julian Date Time\"" << endl;
+    myfile << "\"FILE_ID\", \"ARN\", \"Julian Date Time\", \"SettlementType\"" << endl;
 
     for(int i=0; i < transactions.size(); i++){
         transactions[i].print(myfile);
